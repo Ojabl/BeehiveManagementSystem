@@ -6,7 +6,10 @@
         xmlns:local="clr-namespace:BeehiveManagementSystem"
         mc:Ignorable="d"
         Title="Beehive Management System" Height="325" Width="625">
-    <Grid>
+    <Window.Resources>
+        <local:Queen x:Key="queen"/>
+    </Window.Resources>
+    <Grid DataContext="{StaticResource queen}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition/>
@@ -31,6 +34,6 @@
 
         <Label Content="Queen's Report" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Top" Height="40" Width="125" Grid.Column="1" Margin="0,4,0,0" Grid.RowSpan="2"/>
         
-        <TextBox x:Name="statusReport" Grid.Column="1" HorizontalAlignment="Left" Height="200" Margin="18,18,0,0" Grid.RowSpan="2" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Top" Width="270" IsReadOnly="True"/>
+        <TextBox x:Name="statusReport" Grid.Column="1" HorizontalAlignment="Left" Height="200" Margin="18,18,0,0" Grid.RowSpan="2" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Top" Width="270" IsReadOnly="True" Text="{Binding StatusReport, Mode=OneWay}"/>
     </Grid>
 </Window>

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BeehiveManagementSystem
 {
-    abstract class Bee
+    abstract class Bee : IWorker
     {
         /// <summary>
         /// lets each Bee subclas define the amount of honey it consumes during the shift.

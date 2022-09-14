@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace BeehiveManagementSystem
 {
-    class Queen : Bee
+    class Queen : Bee, INotifyPropertyChanged
     {
         public const float EGGS_PER_SHIFT = 0.45f; //Queen bee is making 0.45 egg per shift
         public const float HONEY_PER_UNASSIGNED_WORKER = 0.5f; // unassigned bee worker is consuming 0.5 honey per shift
 
-        private Bee[] workers = new Bee[0]; // declaring new, empty array of bee workers, now it'e length is equal to 0, but can be extended by AddWorker()
+        private IWorker[] workers = new IWorker[0]; // declaring new, empty array of bee workers, now it'e length is equal to 0, but can be extended by AddWorker()
         private float eggs = 0; // indicates how many eggs beehive has at the start
         private float unassignedWorkers = 3; // indicates how many bees are in the beehive
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public string StatusReport { get; private set; }
         public override float CostPerShift { get { return 2.15f; } } // Queen bee is consuming 2.15 honey per shift
@@ -31,7 +34,7 @@ namespace BeehiveManagementSystem
         /// Expand the workers array by one slot and add a Bee reference.
         /// </summary>
         /// <param name="worker">Worker to add to the workers array.</param>
-        private void AddWorker(Bee worker)
+        private void AddWorker(IWorker worker)
         {
             if(unassignedWorkers >= 1)
             {
@@ -50,6 +53,7 @@ namespace BeehiveManagementSystem
             $"\nEgg Count: {eggs:0.0}\nUnassigned workers: {unassignedWorkers:0.0}\n" +
             $"{WorkerStatus("Nectar Collector")}\n{WorkerStatus("Honey Manufacturer")}" +
             $"\n{WorkerStatus("Egg Care")}\nTOTAL WORKERS: {workers.Length}";
+            OnPropertyChanged("StatusReport");
         }
 
         /// <summary>
@@ -73,7 +77,7 @@ namespace BeehiveManagementSystem
         private string WorkerStatus(string job)
         {
             int count = 0;
-            foreach (Bee worker in workers)
+            foreach (IWorker worker in workers)
                 if (worker.Job == job) count++;
             string s = "s";
             if (count == 1) s = "";
@@ -107,12 +111,17 @@ namespace BeehiveManagementSystem
         protected override void DoJob()
         {
             eggs += EGGS_PER_SHIFT; //Queen is lying eggs
-            foreach(Bee worker in workers) // makes every worker work his shift
+            foreach(IWorker worker in workers) // makes every worker work his shift
             {
                 worker.WorkTheNextShift();
             }
             HoneyVault.ConsumeHoney(unassignedWorkers * HONEY_PER_UNASSIGNED_WORKER); // unassigned workers are consuming honey
             UpdateStatusReport(); // changes were made, update StatusReport
+        }
+
+        protected void OnPropertyChanged(string name)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 }
